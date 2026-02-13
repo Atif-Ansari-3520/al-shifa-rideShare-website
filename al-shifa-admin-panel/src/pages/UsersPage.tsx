@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Shield, User as UserIcon, Calendar, Eye, Users, Mail, Phone, CreditCard } from 'lucide-react';
+import { Search, Shield, User as UserIcon, Calendar, Eye, Users, Mail, Phone, CreditCard, Loader2 } from 'lucide-react';
 import { adminApi } from '../api/admin';
 import { Skeleton } from '../components/ui/Skeleton';
 import { staggerContainer, staggerItem } from '../utils/animations';
@@ -16,14 +16,49 @@ export const UsersPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebounce(searchQuery, 300);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const observerTarget = useRef(null);
 
-    // Fetch users
-    const { data, isLoading } = useQuery({
+    // Fetch users (Infinite Scroll)
+    const {
+        data,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
         queryKey: ['users', debouncedSearch],
-        queryFn: () => adminApi.getUsers({ search: debouncedSearch || undefined }),
+        queryFn: ({ pageParam = 1 }) =>
+            adminApi.getUsers({
+                search: debouncedSearch || undefined,
+                page: pageParam,
+                limit: 12,
+            }),
+        getNextPageParam: (lastPage, allPages) => {
+            const nextPage = allPages.length + 1;
+            return nextPage <= Math.ceil(lastPage.total / 12) ? nextPage : undefined;
+        },
+        initialPageParam: 1,
     });
 
-    const users = data?.users || [];
+    // Infinite Scroll Observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => observer.disconnect();
+    }, [hasNextPage, fetchNextPage]);
+
+    const users = data?.pages.flatMap((page) => page.users) || [];
 
     const handleImageClick = (user: User) => {
         if (user.profile_pic_id) {
@@ -61,7 +96,7 @@ export const UsersPage: React.FC = () => {
                     <div>
                         <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Users</p>
                         <p className="text-xl font-bold text-white leading-none">
-                            {data?.total || 0}
+                            {data?.pages[0]?.total || 0}
                         </p>
                     </div>
                 </motion.div>
@@ -107,87 +142,96 @@ export const UsersPage: React.FC = () => {
                     <p className="text-slate-500">Try adjusting your search terms.</p>
                 </motion.div>
             ) : (
-                <motion.div
-                    variants={staggerContainer}
-                    initial="initial"
-                    animate="animate"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
-                    <AnimatePresence>
-                        {users.map((user) => (
-                            <motion.div
-                                key={user.id}
-                                variants={staggerItem}
-                                layout
-                                className="group relative overflow-hidden rounded-3xl bg-slate-900/80 backdrop-blur-sm border border-slate-800 hover:border-teal-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/5"
-                            >
-                                {/* Decorative Gradient Bg */}
-                                <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-br from-slate-800 to-slate-900 opacity-50" />
+                <div className="space-y-6">
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="initial"
+                        animate="animate"
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    >
+                        <AnimatePresence>
+                            {users.map((user) => (
+                                <motion.div
+                                    key={user.id}
+                                    variants={staggerItem}
+                                    layout
+                                    className="group relative overflow-hidden rounded-3xl bg-slate-900/80 backdrop-blur-sm border border-slate-800 hover:border-teal-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/5"
+                                >
+                                    {/* Decorative Gradient Bg */}
+                                    <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-br from-slate-800 to-slate-900 opacity-50" />
 
-                                <div className="relative p-6 pt-8 flex flex-col items-center text-center h-full">
-                                    {/* Profile Avatar */}
-                                    <div className="relative inline-block mb-4">
-                                        <div
-                                            className={`w-24 h-24 rounded-full border-4 border-slate-700 bg-slate-800 flex items-center justify-center overflow-hidden shadow-lg mx-auto group-hover:border-teal-500/50 transition-colors ${user.profile_pic_id || user.profile_picture ? 'cursor-pointer hover:scale-105 active:scale-95' : ''}`}
-                                            onClick={() => handleImageClick(user)}
-                                        >
-                                            {user.profile_pic_id ? (
-                                                <img
-                                                    src={adminApi.getUserImage(user.profile_pic_id)}
-                                                    alt={user.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : user.profile_picture ? (
-                                                <img
-                                                    src={user.profile_picture}
-                                                    alt={user.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <span className="text-2xl font-black text-slate-600 uppercase group-hover:text-teal-500 transition-colors">
-                                                    {user.name?.charAt(0) || user.email?.charAt(0) || '?'}
-                                                </span>
-                                            )}
+                                    <div className="relative p-6 pt-8 flex flex-col items-center text-center h-full">
+                                        {/* Profile Avatar */}
+                                        <div className="relative inline-block mb-4">
+                                            <div
+                                                className={`w-24 h-24 rounded-full border-4 border-slate-700 bg-slate-800 flex items-center justify-center overflow-hidden shadow-lg mx-auto group-hover:border-teal-500/50 transition-colors ${user.profile_pic_id || user.profile_picture ? 'cursor-pointer hover:scale-105 active:scale-95' : ''}`}
+                                                onClick={() => handleImageClick(user)}
+                                            >
+                                                {user.profile_pic_id ? (
+                                                    <img
+                                                        src={adminApi.getUserImage(user.profile_pic_id)}
+                                                        alt={user.name}
+                                                        className="w-full h-full object-cover"
+                                                        loading="lazy"
+                                                    />
+                                                ) : user.profile_picture ? (
+                                                    <img
+                                                        src={user.profile_picture}
+                                                        alt={user.name}
+                                                        className="w-full h-full object-cover"
+                                                        loading="lazy"
+                                                    />
+                                                ) : (
+                                                    <span className="text-2xl font-black text-slate-600 uppercase group-hover:text-teal-500 transition-colors">
+                                                        {user.name?.charAt(0) || user.email?.charAt(0) || '?'}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="absolute bottom-1 right-1 p-1.5 bg-slate-900 rounded-full border border-slate-700 pointer-events-none">
+                                                {user.active_role === 'admin' ? (
+                                                    <Shield className="h-3.5 w-3.5 text-cyan-400" />
+                                                ) : user.active_role === 'driver' ? (
+                                                    <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
+                                                ) : (
+                                                    <UserIcon className="h-3.5 w-3.5 text-slate-400" />
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="absolute bottom-1 right-1 p-1.5 bg-slate-900 rounded-full border border-slate-700 pointer-events-none">
-                                            {user.active_role === 'admin' ? (
-                                                <Shield className="h-3.5 w-3.5 text-cyan-400" />
-                                            ) : user.active_role === 'driver' ? (
-                                                <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
-                                            ) : (
-                                                <UserIcon className="h-3.5 w-3.5 text-slate-400" />
-                                            )}
+
+                                        <h3 className="text-lg font-bold text-white mb-1 truncate px-2">{user.name}</h3>
+
+                                        <div className="space-y-2 w-full px-4 mb-4">
+                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
+                                                <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                                                <span>{user.email}</span>
+                                            </div>
+                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
+                                                <Phone className="h-3.5 w-3.5 flex-shrink-0" />
+                                                <span>{user.phone}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-auto pt-4 border-t border-slate-700/50 w-full flex justify-center pb-6">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${user.active_role === 'admin'
+                                                ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                                                : user.active_role === 'driver'
+                                                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                    : 'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                                                }`}>
+                                                {user.active_role}
+                                            </span>
                                         </div>
                                     </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </motion.div>
 
-                                    <h3 className="text-lg font-bold text-white mb-1 truncate px-2">{user.name}</h3>
-
-                                    <div className="space-y-2 w-full px-4 mb-4">
-                                        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
-                                            <Mail className="h-3.5 w-3.5 flex-shrink-0" />
-                                            <span>{user.email}</span>
-                                        </div>
-                                        <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
-                                            <Phone className="h-3.5 w-3.5 flex-shrink-0" />
-                                            <span>{user.phone}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-auto pt-4 border-t border-slate-700/50 w-full flex justify-center pb-6">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${user.active_role === 'admin'
-                                            ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
-                                            : user.active_role === 'driver'
-                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                : 'bg-slate-700/50 text-slate-400 border-slate-600/50'
-                                            }`}>
-                                            {user.active_role}
-                                        </span>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                </motion.div>
+                    {/* Loader for Infinite Scroll */}
+                    <div ref={observerTarget} className="h-10 flex items-center justify-center w-full mt-4">
+                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-teal-500 animate-spin" />}
+                    </div>
+                </div>
             )}
 
             {/* Image Preview Modal */}

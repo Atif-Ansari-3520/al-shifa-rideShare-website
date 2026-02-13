@@ -43,12 +43,30 @@ export const maskEmail = (email: string): string => {
     return `${name.slice(0, 2)}***@${domain}`;
 };
 
-// ✅ Safe date formatter
 export function formatDateSafe(date?: string | Date) {
     if (!date) return "N/A";
+
     try {
-        return format(new Date(date), "dd/MM/yyyy");
+        // Handle DD-MM-YYYY or DD/MM/YYYY manually if string
+        if (typeof date === 'string') {
+            // Check for DD-MM-YYYY or DD/MM/YYYY
+            const ddmmyyyy = date.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+            if (ddmmyyyy) {
+                const day = parseInt(ddmmyyyy[1], 10);
+                const month = parseInt(ddmmyyyy[2], 10) - 1; // Month is 0-indexed
+                const year = parseInt(ddmmyyyy[3], 10);
+                const dateObj = new Date(year, month, day);
+                if (!isNaN(dateObj.getTime())) {
+                    return format(dateObj, "dd/MM/yyyy");
+                }
+            }
+        }
+
+        const dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) return String(date); // Fallback to original string if invalid date but not empty
+
+        return format(dateObj, "dd/MM/yyyy");
     } catch {
-        return "Invalid date";
+        return String(date); // Fallback to original string
     }
 }

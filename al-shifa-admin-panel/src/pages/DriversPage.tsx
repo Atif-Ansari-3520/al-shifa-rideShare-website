@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Search, Car, AlertCircle } from 'lucide-react';
+import { Search, Car, AlertCircle, Loader2 } from 'lucide-react';
 import { driversApi } from '../api/drivers';
 import { useToast } from '../components/ui/Toast';
 import { TabNavigation } from '../components/drivers/TabNavigation';
@@ -47,6 +47,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 export const DriversPage: React.FC = () => {
     const queryClient = useQueryClient();
     const { showToast } = useToast();
+    const observerTarget = useRef(null);
 
     const [activeTab, setActiveTab] = useState<DriverStatus>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -55,35 +56,67 @@ export const DriversPage: React.FC = () => {
 
     const debouncedSearch = useDebounce(searchQuery, 300);
 
-    // Fetch drivers
-    const { data: driversData, isLoading } = useQuery({
+    // Fetch drivers (Infinite Scroll)
+    const {
+        data: driversData,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useInfiniteQuery({
         queryKey: ['drivers', activeTab, debouncedSearch],
-        queryFn: () =>
+        queryFn: ({ pageParam = 1 }) =>
             driversApi.getDrivers({
                 status: activeTab === 'all' ? undefined : activeTab,
                 search: debouncedSearch || undefined,
+                page: pageParam,
+                limit: 12, // Load 12 at a time
             }),
+        getNextPageParam: (lastPage, allPages) => {
+            const nextPage = allPages.length + 1;
+            return nextPage <= Math.ceil(lastPage.total / 12) ? nextPage : undefined;
+        },
+        initialPageParam: 1,
     });
+
+    // Infinite Scroll Observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 1.0 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => observer.disconnect();
+    }, [hasNextPage, fetchNextPage]);
+
 
     // Fetch counts for tabs
     const { data: allDrivers } = useQuery({
-        queryKey: ['drivers', 'all'],
-        queryFn: () => driversApi.getDrivers({}),
+        queryKey: ['drivers', 'all-count'],
+        queryFn: () => driversApi.getDrivers({ limit: 1 }), // Minimal fetch for count
     });
 
     const { data: pendingDrivers } = useQuery({
-        queryKey: ['drivers', 'pending'],
-        queryFn: () => driversApi.getDrivers({ status: 'pending' }),
+        queryKey: ['drivers', 'pending-count'],
+        queryFn: () => driversApi.getDrivers({ status: 'pending', limit: 1 }),
     });
 
     const { data: approvedDrivers } = useQuery({
-        queryKey: ['drivers', 'approved'],
-        queryFn: () => driversApi.getDrivers({ status: 'approved' }),
+        queryKey: ['drivers', 'approved-count'],
+        queryFn: () => driversApi.getDrivers({ status: 'approved', limit: 1 }),
     });
 
     const { data: rejectedDrivers } = useQuery({
-        queryKey: ['drivers', 'rejected'],
-        queryFn: () => driversApi.getDrivers({ status: 'rejected' }),
+        queryKey: ['drivers', 'rejected-count'],
+        queryFn: () => driversApi.getDrivers({ status: 'rejected', limit: 1 }),
     });
 
     // Approve mutation
@@ -137,7 +170,7 @@ export const DriversPage: React.FC = () => {
         { id: 'rejected', label: 'Rejected', count: rejectedDrivers?.total },
     ];
 
-    const drivers = driversData?.drivers || [];
+    const drivers = driversData?.pages.flatMap((page) => page.drivers) || [];
 
     return (
         <div className="space-y-6 py-6">
@@ -226,6 +259,11 @@ export const DriversPage: React.FC = () => {
                             />
                         ))}
                     </motion.div>
+
+                    {/* Loader for Infinite Scroll */}
+                    <div ref={observerTarget} className="h-10 flex items-center justify-center w-full mt-4">
+                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-emerald-500 animate-spin" />}
+                    </div>
                 </ErrorBoundary>
             )}
 

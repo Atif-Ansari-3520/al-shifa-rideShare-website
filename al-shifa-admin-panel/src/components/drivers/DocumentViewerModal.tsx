@@ -149,10 +149,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                                         <span className="text-gray-900 dark:text-white break-all">{driverDetails.email}</span>
                                     </div>
 
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Phone className="h-4 w-4 text-gray-500" />
-                                        <span className="text-gray-900 dark:text-white">{driverDetails.phone || 'N/A'}</span>
-                                    </div>
+
 
                                     <div className="flex items-center gap-3 text-sm">
                                         <Calendar className="h-4 w-4 text-gray-500" />
