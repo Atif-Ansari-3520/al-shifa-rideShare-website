@@ -33,10 +33,10 @@ const toastIcons = {
 };
 
 const toastStyles = {
-    success: 'bg-success-50 border-success-400 text-success-700',
-    error: 'bg-danger-50 border-danger-400 text-danger-700',
-    warning: 'bg-warning-50 border-warning-400 text-warning-700',
-    info: 'bg-primary-50 border-primary-400 text-primary-700',
+    success: 'bg-blue-500 text-white border-blue-600 shadow-blue-500/30',
+    error: 'bg-rose-500 text-white border-rose-600 shadow-rose-500/30',
+    warning: 'bg-amber-500 text-white border-amber-600 shadow-amber-500/30',
+    info: 'bg-slate-800 text-white border-slate-700 shadow-slate-900/30',
 };
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -65,11 +65,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         return (
                             <motion.div
                                 key={toast.id}
-                                initial={{ x: 400, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: 400, opacity: 0 }}
+                                initial={{ x: 100, opacity: 0, scale: 0.9 }}
+                                animate={{ x: 0, opacity: 1, scale: 1 }}
+                                exit={{ x: 100, opacity: 0, scale: 0.9 }}
+                                whileHover={{ scale: 1.02 }}
+                                layout
                                 className={cn(
-                                    'min-w-[300px] p-4 rounded-lg border-l-4 shadow-lg flex items-start gap-3',
+                                    'min-w-[320px] p-4 rounded-2xl border shadow-xl backdrop-blur-md flex items-center gap-3',
                                     toastStyles[toast.type]
                                 )}
                             >

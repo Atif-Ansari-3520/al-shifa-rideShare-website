@@ -1,5 +1,5 @@
 import apiClient from './axios';
-import { DashboardStats, User } from '../types';
+import { DashboardStats, User, Ride } from '../types';
 
 export const adminApi = {
     getStats: async (): Promise<DashboardStats> => {
@@ -32,6 +32,17 @@ export const adminApi = {
             users: transformedUsers,
             total: response.data.total
         };
+    },
+
+    getRides: async (params?: {
+        page?: number;
+        limit?: number;
+        status?: string;
+        ride_type?: string;
+        search?: string;
+    }): Promise<{ rides: Ride[]; total: number; total_pages: number }> => {
+        const response = await apiClient.get('/admin/rides', { params });
+        return response.data;
     },
 
     switchUserRole: async (userId: string, role: 'passenger' | 'driver' | 'admin'): Promise<User> => {

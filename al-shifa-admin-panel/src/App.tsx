@@ -8,6 +8,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { DriversPage } from './pages/DriversPage';
 import { UsersPage } from './pages/UsersPage';
+import { RidesPage } from './pages/RidesPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 // Create a client
@@ -25,7 +26,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
@@ -37,19 +38,21 @@ function App() {
       <ToastProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
             <Route
-              path="/*"
               element={
                 <ProtectedRoute>
                   <DashboardLayout />
                 </ProtectedRoute>
               }
             >
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="drivers" element={<DriversPage />} />
-              <Route path="users" element={<UsersPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/drivers" element={<DriversPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/rides" element={<RidesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

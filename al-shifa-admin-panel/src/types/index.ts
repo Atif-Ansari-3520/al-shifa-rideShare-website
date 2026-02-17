@@ -48,6 +48,34 @@ export interface RejectionReason {
     icon: string;
 }
 
+// Ride Types
+export interface Ride {
+    _id: string;
+    posted_by_email: string;
+    poster_name: string;
+    poster_contact: string;
+    poster_profile_pic_id?: string;
+    ride_type: 'passenger' | 'driver';
+    pickup_address: string;
+    pickup_date: string;
+    pickup_time: string;
+    dropoff_address: string;
+    dropoff_time?: string;
+    number_of_seats: number;
+    contact_number?: string;
+    status: 'active' | 'completed' | 'cancelled';
+    created_at: string;
+    vehicle_info?: {
+        brand: string;
+        model: string;
+        year: number;
+        color: string;
+        plate: string;
+        type: string;
+        vehicle_pic_id?: string;
+    };
+}
+
 // Dashboard Types
 export interface DashboardStats {
     total_users: number;
@@ -55,6 +83,10 @@ export interface DashboardStats {
     approved_drivers: number;
     rejected_drivers: number;
     today_signups: number;
+    total_rides: number;
+    active_rides: number;
+    completed_rides: number;
+    today_rides: number;
 }
 
 // Auth Types

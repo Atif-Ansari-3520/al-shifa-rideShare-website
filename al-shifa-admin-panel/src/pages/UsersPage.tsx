@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -88,13 +87,13 @@ export const UsersPage: React.FC = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-slate-800/50 border border-slate-700/50 backdrop-blur-sm"
+                    className="flex items-center gap-4 px-5 py-3 rounded-2xl bg-slate-800 border border-slate-700 shadow-sm"
                 >
-                    <div className="p-2.5 bg-teal-500/10 rounded-xl">
-                        <Users className="h-5 w-5 text-teal-400" />
+                    <div className="p-2.5 bg-blue-500/20 rounded-xl">
+                        <Users className="h-5 w-5 text-blue-500" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Total Users</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Users</p>
                         <p className="text-xl font-bold text-white leading-none">
                             {data?.pages[0]?.total || 0}
                         </p>
@@ -109,15 +108,15 @@ export const UsersPage: React.FC = () => {
                 transition={{ delay: 0.1 }}
                 className="relative group max-w-2xl"
             >
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition duration-500" />
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-teal-400 transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search by name, email, or phone..."
-                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder:text-slate-500 focus:ring-0 focus:border-teal-500/50 focus:outline-none transition-all shadow-lg"
+                        className="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:ring-0 focus:border-blue-500 focus:outline-none transition-all shadow-sm"
                     />
                 </div>
             </motion.div>
@@ -126,16 +125,16 @@ export const UsersPage: React.FC = () => {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="h-64 rounded-3xl bg-slate-800/50" />
+                        <Skeleton key={i} className="h-64 rounded-3xl bg-slate-800" />
                     ))}
                 </div>
             ) : users.length === 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="py-20 text-center rounded-3xl border border-dashed border-slate-800 bg-slate-900/30"
+                    className="py-20 text-center rounded-3xl border border-dashed border-slate-700 bg-slate-800/50"
                 >
-                    <div className="bg-slate-800/50 p-4 rounded-full w-fit mx-auto mb-4">
+                    <div className="bg-slate-800 p-4 rounded-full w-fit mx-auto mb-4 border border-slate-700">
                         <Search className="h-8 w-8 text-slate-500" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-1">No users found</h3>
@@ -155,16 +154,16 @@ export const UsersPage: React.FC = () => {
                                     key={user.id}
                                     variants={staggerItem}
                                     layout
-                                    className="group relative overflow-hidden rounded-3xl bg-slate-900/80 backdrop-blur-sm border border-slate-800 hover:border-teal-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/5"
+                                    className="group relative overflow-hidden rounded-3xl bg-slate-800 border border-slate-700 hover:border-blue-500/30 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 shadow-sm"
                                 >
                                     {/* Decorative Gradient Bg */}
-                                    <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-br from-slate-800 to-slate-900 opacity-50" />
+                                    <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-br from-slate-700/50 to-slate-800 opacity-50" />
 
                                     <div className="relative p-6 pt-8 flex flex-col items-center text-center h-full">
                                         {/* Profile Avatar */}
                                         <div className="relative inline-block mb-4">
                                             <div
-                                                className={`w-24 h-24 rounded-full border-4 border-slate-700 bg-slate-800 flex items-center justify-center overflow-hidden shadow-lg mx-auto group-hover:border-teal-500/50 transition-colors ${user.profile_pic_id || user.profile_picture ? 'cursor-pointer hover:scale-105 active:scale-95' : ''}`}
+                                                className={`w-24 h-24 rounded-full border-4 border-slate-800 bg-slate-700 flex items-center justify-center overflow-hidden shadow-lg mx-auto group-hover:border-blue-500/20 transition-colors ${user.profile_pic_id || user.profile_picture ? 'cursor-pointer hover:scale-105 active:scale-95' : ''}`}
                                                 onClick={() => handleImageClick(user)}
                                             >
                                                 {user.profile_pic_id ? (
@@ -182,16 +181,16 @@ export const UsersPage: React.FC = () => {
                                                         loading="lazy"
                                                     />
                                                 ) : (
-                                                    <span className="text-2xl font-black text-slate-600 uppercase group-hover:text-teal-500 transition-colors">
+                                                    <span className="text-2xl font-black text-slate-500 uppercase group-hover:text-blue-500 transition-colors">
                                                         {user.name?.charAt(0) || user.email?.charAt(0) || '?'}
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="absolute bottom-1 right-1 p-1.5 bg-slate-900 rounded-full border border-slate-700 pointer-events-none">
+                                            <div className="absolute bottom-1 right-1 p-1.5 bg-slate-800 rounded-full border border-slate-700 pointer-events-none shadow-sm">
                                                 {user.active_role === 'admin' ? (
-                                                    <Shield className="h-3.5 w-3.5 text-cyan-400" />
+                                                    <Shield className="h-3.5 w-3.5 text-cyan-500" />
                                                 ) : user.active_role === 'driver' ? (
-                                                    <CreditCard className="h-3.5 w-3.5 text-emerald-400" />
+                                                    <CreditCard className="h-3.5 w-3.5 text-emerald-500" />
                                                 ) : (
                                                     <UserIcon className="h-3.5 w-3.5 text-slate-400" />
                                                 )}
@@ -201,22 +200,22 @@ export const UsersPage: React.FC = () => {
                                         <h3 className="text-lg font-bold text-white mb-1 truncate px-2">{user.name}</h3>
 
                                         <div className="space-y-2 w-full px-4 mb-4">
-                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
-                                                <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-900/50 py-1.5 rounded-lg break-all px-2 border border-slate-700/50">
+                                                <Mail className="h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
                                                 <span>{user.email}</span>
                                             </div>
-                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-800/40 py-1.5 rounded-lg break-all px-2">
-                                                <Phone className="h-3.5 w-3.5 flex-shrink-0" />
+                                            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 bg-slate-900/50 py-1.5 rounded-lg break-all px-2 border border-slate-700/50">
+                                                <Phone className="h-3.5 w-3.5 flex-shrink-0 text-slate-500" />
                                                 <span>{user.phone}</span>
                                             </div>
                                         </div>
 
-                                        <div className="mt-auto pt-4 border-t border-slate-700/50 w-full flex justify-center pb-6">
+                                        <div className="mt-auto pt-4 border-t border-slate-700 w-full flex justify-center pb-6">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${user.active_role === 'admin'
                                                 ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
                                                 : user.active_role === 'driver'
                                                     ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                                    : 'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                                                    : 'bg-slate-700/50 text-slate-400 border-slate-700'
                                                 }`}>
                                                 {user.active_role}
                                             </span>
@@ -229,7 +228,7 @@ export const UsersPage: React.FC = () => {
 
                     {/* Loader for Infinite Scroll */}
                     <div ref={observerTarget} className="h-10 flex items-center justify-center w-full mt-4">
-                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-teal-500 animate-spin" />}
+                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />}
                     </div>
                 </div>
             )}

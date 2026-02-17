@@ -28,12 +28,12 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     render() {
         if (this.state.hasError) {
             return (
-                <div className="text-center py-12 glass dark:dark-glass rounded-2xl border border-rose-500/20">
+                <div className="text-center py-12 bg-slate-800 rounded-2xl border border-rose-500/20">
                     <AlertCircle className="h-12 w-12 text-rose-500 mx-auto mb-4" />
                     <p className="text-rose-500 font-black uppercase tracking-tighter italic">Fleet Data Stream Interrupted.</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-4 text-sm text-primary-500 hover:underline"
+                        className="mt-4 text-sm text-blue-400 hover:underline"
                     >
                         Refresh page
                     </button>
@@ -181,12 +181,12 @@ export const DriversPage: React.FC = () => {
                 transition={{ duration: 0.4 }}
                 className="flex items-start gap-4"
             >
-                <div className="h-14 w-1.5 bg-gradient-to-b from-emerald-500 to-cyan-500 rounded-full" />
+                <div className="h-14 w-1.5 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-full" />
                 <div>
-                    <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500 tracking-tight">
+                    <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight">
                         Driver Management
                     </h1>
-                    <p className="text-slate-400 dark:text-slate-500 font-medium text-sm mt-0.5">
+                    <p className="text-slate-400 font-medium text-sm mt-0.5">
                         Manage and verify driver applications
                     </p>
                 </div>
@@ -199,15 +199,15 @@ export const DriversPage: React.FC = () => {
                 transition={{ duration: 0.4, delay: 0.1 }}
                 className="relative w-full group"
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-xl" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
                 <div className="relative flex items-center">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-emerald-500 group-focus-within:text-cyan-400 transition-colors z-10" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-400 group-focus-within:text-blue-500 transition-colors z-10" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="🔍 Search drivers by name, email, or phone..."
-                        className="w-full pl-16 pr-8 py-5 rounded-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-2 border-emerald-200 dark:border-emerald-500/30 text-slate-900 dark:text-white font-bold placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-4 focus:ring-emerald-400/30 focus:border-emerald-400 focus:outline-none transition-all shadow-xl text-base"
+                        className="w-full pl-16 pr-8 py-5 rounded-2xl bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 text-white font-medium placeholder:text-slate-500 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 focus:outline-none transition-all shadow-xl text-base"
                     />
                 </div>
             </motion.div>
@@ -225,20 +225,20 @@ export const DriversPage: React.FC = () => {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
                     {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="h-96 rounded-3xl" />
+                        <Skeleton key={i} className="h-96 rounded-3xl bg-slate-800" />
                     ))}
                 </div>
             ) : drivers.length === 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="glass-card py-32 text-center border-dashed border-2 border-slate-200 dark:border-slate-800"
+                    className="py-32 text-center border-dashed border-2 border-slate-700 bg-slate-800/30 rounded-3xl"
                 >
-                    <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-full w-fit mx-auto mb-6">
-                        <Car className="h-12 w-12 text-slate-400" />
+                    <div className="bg-slate-800 p-6 rounded-full w-fit mx-auto mb-6 border border-slate-700">
+                        <Car className="h-12 w-12 text-slate-500" />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-2">No Records Found</h3>
-                    <p className="text-slate-500 dark:text-slate-400 font-bold">The fleet database returned zero results for this sector.</p>
+                    <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2">No Records Found</h3>
+                    <p className="text-slate-400 font-bold">The fleet database returned zero results for this sector.</p>
                 </motion.div>
             ) : (
                 <ErrorBoundary>
@@ -262,7 +262,7 @@ export const DriversPage: React.FC = () => {
 
                     {/* Loader for Infinite Scroll */}
                     <div ref={observerTarget} className="h-10 flex items-center justify-center w-full mt-4">
-                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-emerald-500 animate-spin" />}
+                        {isFetchingNextPage && <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />}
                     </div>
                 </ErrorBoundary>
             )}
