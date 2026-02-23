@@ -67,7 +67,7 @@ export interface Ride {
     reservations?: { passenger_name: string; seats_reserved: number }[];
     booking_status?: string;
     contact_number?: string;
-    status: 'active' | 'completed' | 'cancelled';
+    status: 'active' | 'completed' | 'cancelled' | 'in process';
     created_at: string;
     vehicle_info?: {
         brand: string;

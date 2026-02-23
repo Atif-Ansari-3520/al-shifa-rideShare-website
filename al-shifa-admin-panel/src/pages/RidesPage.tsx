@@ -144,9 +144,10 @@ export const RidesPage: React.FC = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <div className={`px-2 py-1 rounded-lg text-xs font-medium ${ride.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                                    ride.status === 'completed' ? 'bg-slate-700 text-slate-400' :
-                                        'bg-rose-500/20 text-rose-400'
+                                <div className={`px-2 py-1 rounded-lg text-xs font-medium uppercase ${ride.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
+                                    ride.status === 'in process' ? 'bg-blue-500/20 text-blue-400' :
+                                        ride.status === 'completed' ? 'bg-slate-700 text-slate-400' :
+                                            'bg-rose-500/20 text-rose-400'
                                     }`}>
                                     {ride.status}
                                 </div>
