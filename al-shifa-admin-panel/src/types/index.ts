@@ -61,6 +61,7 @@ export interface Ride {
     pickup_time: string;
     dropoff_address: string;
     dropoff_time?: string;
+    fare_per_seat?: number;
     number_of_seats: number;
     contact_number?: string;
     status: 'active' | 'completed' | 'cancelled';

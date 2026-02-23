@@ -12,7 +12,8 @@ import {
     X,
     ChevronRight,
     Navigation,
-    Filter
+    Filter,
+    DollarSign
 } from 'lucide-react';
 import { adminApi } from '../api/admin';
 import { Ride } from '../types';
@@ -149,7 +150,7 @@ export const RidesPage: React.FC = () => {
                             </div>
 
                             {/* Minimal Route Info */}
-                            <div className="space-y-3 mb-5">
+                            <div className="space-y-3 mb-4">
                                 <div className="flex items-center gap-3 text-slate-400 text-sm">
                                     <div className="w-2 h-2 rounded-full bg-blue-500" />
                                     <span className="truncate text-slate-300">{ride.pickup_address}</span>
@@ -157,6 +158,20 @@ export const RidesPage: React.FC = () => {
                                 <div className="flex items-center gap-3 text-slate-400 text-sm">
                                     <div className="w-2 h-2 rounded-full bg-purple-500" />
                                     <span className="truncate text-slate-300">{ride.dropoff_address}</span>
+                                </div>
+                            </div>
+
+                            {/* Fare & Seats Quick Info */}
+                            <div className="flex items-center gap-2 mb-4">
+                                {ride.fare_per_seat != null && (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                                        <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                                        <span className="text-emerald-400 text-xs font-semibold">Rs {ride.fare_per_seat}</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                                    <Users className="w-3.5 h-3.5 text-indigo-400" />
+                                    <span className="text-indigo-400 text-xs font-semibold">{ride.number_of_seats} seats</span>
                                 </div>
                             </div>
 
@@ -251,7 +266,18 @@ export const RidesPage: React.FC = () => {
                                 </div>
 
                                 {/* Additional Info */}
-                                <div className="grid grid-cols-1">
+                                <div className={`grid ${selectedRide.fare_per_seat != null ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
+                                    {selectedRide.fare_per_seat != null && (
+                                        <div className="bg-slate-800 rounded-2xl p-4 border border-slate-700">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                                                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                                                </div>
+                                                <span className="text-slate-400 text-sm">Fare / Seat</span>
+                                            </div>
+                                            <p className="text-white font-bold text-xl">Rs {selectedRide.fare_per_seat}</p>
+                                        </div>
+                                    )}
                                     <div className="bg-slate-800 rounded-2xl p-4 border border-slate-700">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center">

@@ -157,57 +157,6 @@ export const DashboardPage: React.FC = () => {
                 })}
             </div>
 
-            {/* Quick Info Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
-                <div className="rounded-3xl bg-slate-800/50 border border-slate-700 p-6 shadow-lg backdrop-blur-sm">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        Platform Status
-                    </h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
-                            <span className="text-slate-400">Total Registered</span>
-                            <span className="text-white font-bold">{stats?.total_users || 0} users</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
-                            <span className="text-slate-400">Active Drivers</span>
-                            <span className="text-emerald-400 font-bold">{stats?.approved_drivers || 0} verified</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-slate-800 rounded-xl border border-slate-700">
-                            <span className="text-slate-400">Awaiting Review</span>
-                            <span className="text-amber-400 font-bold">{stats?.pending_drivers || 0} pending</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="rounded-3xl bg-slate-800/50 border border-slate-700 p-6 shadow-lg backdrop-blur-sm">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                        Quick Actions
-                    </h3>
-                    <div className="space-y-3">
-                        <Link
-                            to="/drivers?status=pending"
-                            className="flex justify-between items-center p-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 transition-colors group cursor-pointer border border-amber-500/20"
-                        >
-                            <span className="text-amber-400 font-medium">Review Pending Drivers</span>
-                            <ArrowRight className="w-4 h-4 text-amber-500 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                        <Link
-                            to="/users"
-                            className="flex justify-between items-center p-4 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 transition-colors group cursor-pointer border border-blue-500/20"
-                        >
-                            <span className="text-blue-400 font-medium">Manage Users</span>
-                            <ArrowRight className="w-4 h-4 text-blue-500 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </div>
-                </div>
-            </motion.div>
         </div>
     );
 };

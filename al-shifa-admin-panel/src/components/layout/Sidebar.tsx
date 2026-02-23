@@ -26,7 +26,7 @@ export const Sidebar: React.FC = () => {
     };
 
     const navItems = [
-        { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+        { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Users, label: 'Users', path: '/users' },
         { icon: UserCheck, label: 'Drivers', path: '/drivers' },
         { icon: Car, label: 'Rides', path: '/rides' },

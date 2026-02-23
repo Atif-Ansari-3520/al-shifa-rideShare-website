@@ -28,14 +28,14 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                     className={cn(
                         'relative px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center gap-3 min-w-fit',
                         activeTab === tab.id
-                            ? 'text-white shadow-lg shadow-emerald-500/20'
-                            : 'text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10'
+                            ? 'text-white shadow-lg shadow-blue-500/20'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
                     )}
                 >
                     {activeTab === tab.id && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl"
+                            className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl"
                             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         />
                     )}
