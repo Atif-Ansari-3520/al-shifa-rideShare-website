@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// Auto-deploy verified: Surge.sh
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
