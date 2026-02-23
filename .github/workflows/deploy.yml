@@ -1,0 +1,38 @@
+name: Deploy to Surge.sh
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: al-shifa-admin-panel/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: al-shifa-admin-panel
+
+      - name: Build
+        run: npm run build
+        working-directory: al-shifa-admin-panel
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+
+      - name: Create 200.html for SPA routing
+        run: cp dist/index.html dist/200.html
+        working-directory: al-shifa-admin-panel
+
+      - name: Deploy to Surge
+        run: npx surge al-shifa-admin-panel/dist alshifa-ride.surge.sh --token ${{ secrets.SURGE_TOKEN }}
