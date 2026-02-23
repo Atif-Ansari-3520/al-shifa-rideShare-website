@@ -13,7 +13,9 @@ import {
     ChevronRight,
     Navigation,
     Filter,
-    DollarSign
+    DollarSign,
+    Armchair,
+    UserCheck
 } from 'lucide-react';
 import { adminApi } from '../api/admin';
 import { Ride } from '../types';
@@ -162,17 +164,23 @@ export const RidesPage: React.FC = () => {
                             </div>
 
                             {/* Fare & Seats Quick Info */}
-                            <div className="flex items-center gap-2 mb-4">
+                            <div className="flex items-center flex-wrap gap-2 mb-4">
                                 {ride.fare_per_seat != null && (
                                     <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                                         <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
                                         <span className="text-emerald-400 text-xs font-semibold">Rs {ride.fare_per_seat}</span>
                                     </div>
                                 )}
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                                    <Users className="w-3.5 h-3.5 text-indigo-400" />
-                                    <span className="text-indigo-400 text-xs font-semibold">{ride.number_of_seats} seats</span>
+                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                    <Armchair className="w-3.5 h-3.5 text-blue-400" />
+                                    <span className="text-blue-400 text-xs font-semibold">{ride.available_seats ?? ride.number_of_seats} / {ride.number_of_seats}</span>
                                 </div>
+                                {(ride.number_of_seats - (ride.available_seats ?? ride.number_of_seats)) > 0 && (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                                        <UserCheck className="w-3.5 h-3.5 text-amber-400" />
+                                        <span className="text-amber-400 text-xs font-semibold">{ride.number_of_seats - (ride.available_seats ?? ride.number_of_seats)} reserved</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* View Button */}
@@ -238,54 +246,81 @@ export const RidesPage: React.FC = () => {
                             </div>
 
                             <div className="p-6 grid gap-8">
-                                {/* Route Details */}
-                                <div className="space-y-6">
-                                    <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                                        <Navigation className="w-4 h-4" />
-                                        Trip Details
-                                    </h3>
-                                    <div className="relative pl-6 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-700">
-                                        <div className="relative">
-                                            <div className="absolute -left-[29px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-slate-900 shadow-sm" />
-                                            <label className="text-xs text-slate-500 font-medium uppercase mb-1 block">Pick-up</label>
-                                            <p className="text-white font-medium text-lg leading-tight mb-1">{selectedRide.pickup_address}</p>
-                                            <div className="flex items-center gap-2 text-sm text-slate-400">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{selectedRide.pickup_date}</span>
-                                                <Clock className="w-4 h-4 ml-2" />
-                                                <span>{selectedRide.pickup_time}</span>
+                                {/* Trip Details + Seat & Fare Side by Side */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Left: Route Details */}
+                                    <div className="space-y-6">
+                                        <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                                            <Navigation className="w-4 h-4" />
+                                            Trip Details
+                                        </h3>
+                                        <div className="relative pl-6 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-700">
+                                            <div className="relative">
+                                                <div className="absolute -left-[29px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-slate-900 shadow-sm" />
+                                                <label className="text-xs text-slate-500 font-medium uppercase mb-1 block">Pick-up</label>
+                                                <p className="text-white font-medium text-lg leading-tight mb-1">{selectedRide.pickup_address}</p>
+                                                <div className="flex items-center gap-2 text-sm text-slate-400">
+                                                    <Calendar className="w-4 h-4" />
+                                                    <span>{selectedRide.pickup_date}</span>
+                                                    <Clock className="w-4 h-4 ml-2" />
+                                                    <span>{selectedRide.pickup_time}</span>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="relative">
-                                            <div className="absolute -left-[29px] top-1 w-2.5 h-2.5 rounded-full bg-purple-500 ring-4 ring-slate-900 shadow-sm" />
-                                            <label className="text-xs text-slate-500 font-medium uppercase mb-1 block">Drop-off</label>
-                                            <p className="text-white font-medium text-lg leading-tight mb-1">{selectedRide.dropoff_address}</p>
+                                            <div className="relative">
+                                                <div className="absolute -left-[29px] top-1 w-2.5 h-2.5 rounded-full bg-purple-500 ring-4 ring-slate-900 shadow-sm" />
+                                                <label className="text-xs text-slate-500 font-medium uppercase mb-1 block">Drop-off</label>
+                                                <p className="text-white font-medium text-lg leading-tight mb-1">{selectedRide.dropoff_address}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Additional Info */}
-                                <div className={`grid ${selectedRide.fare_per_seat != null ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
-                                    {selectedRide.fare_per_seat != null && (
-                                        <div className="bg-slate-800 rounded-2xl p-4 border border-slate-700">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                                    <DollarSign className="w-4 h-4 text-emerald-400" />
+                                    {/* Right: Seat & Fare 2x2 Grid */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-2">
+                                            <Armchair className="w-4 h-4" />
+                                            Seat & Fare
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {selectedRide.fare_per_seat != null && (
+                                                <div className="bg-slate-800 rounded-2xl p-4 border border-emerald-500/20">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <div className="w-7 h-7 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                                                            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                                                        </div>
+                                                        <span className="text-slate-500 text-xs font-medium">Fare / Seat</span>
+                                                    </div>
+                                                    <p className="text-emerald-400 font-bold text-lg">Rs {selectedRide.fare_per_seat}</p>
                                                 </div>
-                                                <span className="text-slate-400 text-sm">Fare / Seat</span>
+                                            )}
+                                            <div className="bg-slate-800 rounded-2xl p-4 border border-indigo-500/20">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-7 h-7 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+                                                        <Users className="w-3.5 h-3.5 text-indigo-400" />
+                                                    </div>
+                                                    <span className="text-slate-500 text-xs font-medium">Total Seats</span>
+                                                </div>
+                                                <p className="text-indigo-400 font-bold text-lg">{selectedRide.number_of_seats}</p>
                                             </div>
-                                            <p className="text-white font-bold text-xl">Rs {selectedRide.fare_per_seat}</p>
-                                        </div>
-                                    )}
-                                    <div className="bg-slate-800 rounded-2xl p-4 border border-slate-700">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 flex items-center justify-center">
-                                                <Users className="w-4 h-4 text-indigo-400" />
+                                            <div className="bg-slate-800 rounded-2xl p-4 border border-blue-500/20">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-7 h-7 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                                        <Armchair className="w-3.5 h-3.5 text-blue-400" />
+                                                    </div>
+                                                    <span className="text-slate-500 text-xs font-medium">Available</span>
+                                                </div>
+                                                <p className="text-blue-400 font-bold text-lg">{selectedRide.available_seats ?? selectedRide.number_of_seats}</p>
                                             </div>
-                                            <span className="text-slate-400 text-sm">Seats</span>
+                                            <div className="bg-slate-800 rounded-2xl p-4 border border-amber-500/20">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-7 h-7 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                                                        <UserCheck className="w-3.5 h-3.5 text-amber-400" />
+                                                    </div>
+                                                    <span className="text-slate-500 text-xs font-medium">Reserved</span>
+                                                </div>
+                                                <p className="text-amber-400 font-bold text-lg">{selectedRide.number_of_seats - (selectedRide.available_seats ?? selectedRide.number_of_seats)}</p>
+                                            </div>
                                         </div>
-                                        <p className="text-white font-bold text-xl">{selectedRide.number_of_seats}</p>
                                     </div>
                                 </div>
 

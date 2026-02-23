@@ -63,6 +63,9 @@ export interface Ride {
     dropoff_time?: string;
     fare_per_seat?: number;
     number_of_seats: number;
+    available_seats?: number;
+    reservations?: { passenger_name: string; seats_reserved: number }[];
+    booking_status?: string;
     contact_number?: string;
     status: 'active' | 'completed' | 'cancelled';
     created_at: string;
